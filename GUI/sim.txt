@@ -1,0 +1,26 @@
+[map]
+brickimages = hor.png,ver.png,int.png,gra.png
+bricksize= 50,50
+windowsize= 450,450
+map = ppppvpppp
+      ppppvpppp
+      ppppvpppp
+      ppppvpppp
+      hhhhihhhh
+      ppppvpppp
+      ppppvpppp
+      ppppvpppp
+      ppppvpppp
+
+[v]
+brick = 0
+
+[h]
+brick = 1
+
+[i]
+brick = 2
+
+[p]
+block = true
+brick = 3
