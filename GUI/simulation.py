@@ -66,13 +66,30 @@ class World():
             exit("Failed to load: "+filename)
 
     def generate(self):
-        print(self.map)
         image = pygame.Surface((self.width*self.bricksize[0], self.height*self.bricksize[1]))
         for y in range(len(self.map)):
             for x in range(len(self.map[0])):
                 brick_image = self.bricks[self.map[y][x]]
                 image.blit(brick_image,(x*self.bricksize[0], y*self.bricksize[1]))
         return image
+
+class Sprite(pygame.sprite.Sprite):
+    def __init__(self, pos, image):
+        super(Sprite, self).__init__()
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.pos = pos
+
+    def _get_pos(self):
+        return self.rect.topleft[0], self.rect.topleft[1]
+
+    def _set_pos(self, pos):
+        self.rect.topleft = pos[0], pos[1]
+
+    def update(self):
+        self.rect.move_ip(self.pos[0], self.pos[1])
+
+    position = property(_get_pos, _set_pos)
 
 if __name__ == "__main__":
 
@@ -81,16 +98,29 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     pygame.display.set_mode((1,1))
-    World = World()
-    World.loadMap(args.map)
+    world = World()
+    world.loadMap(args.map)
 
-    window = pygame.display.set_mode((World.windowSize[0], World.windowSize[1]))
-    map = World.generate()
+    window = pygame.display.set_mode((world.windowSize[0], world.windowSize[1]))
+    map = world.generate()
     window.blit(map, (0, 0))
     pygame.display.flip()
 
+    sprites = pygame.sprite.RenderUpdates()
+    sprite = Sprite((100,200), world.loadBrickImages(["car.png"], 25,25)[0])
+    sprites.add(sprite)
+
+    sprites.update()
+    print(sprite.position)
+    sprite._set_pos((50,50))
+    print(sprite.position)
+    sprites.update()
+
     terminate=True
     while terminate:
+        sprites.clear(window,map)
+        dirty = sprites.draw(window)
+        pygame.display.update(dirty)
         pygame.display.flip()
         for event in pygame.event.get():
             if event.type == pygame.locals.QUIT:
